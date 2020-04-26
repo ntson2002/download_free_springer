@@ -5,23 +5,18 @@ import os
 import codecs
 import sys
 
+
 def extract_pdf_link(
         url="http://link.springer.com/openurl?genre=book&isbn=978-3-662-44874-8",
         saved_folder="download"):
-    links = []
+
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
-    items = soup.find_all('a', {'title': 'Download this book in PDF format'})
-
-    for ii, item in enumerate(items):
-        links.append("http://link.springer.com/" + item['href'])
-
-    links = list(set(links))
+    item = soup.find('a', {'title': 'Download this book in PDF format'})
+    pdf_link = "http://link.springer.com/" + item['href']
     file_name = url[url.rfind("=")+1:]
-
-    main_link = links[0]
-    wget.download(main_link, "{}/{}.pdf".format(saved_folder, file_name))
-    return links
+    wget.download(pdf_link, "{}/{}.pdf".format(saved_folder, file_name))
+    return pdf_link
 
 
 if __name__ == '__main__':
@@ -33,5 +28,10 @@ if __name__ == '__main__':
     with codecs.open(springer_link_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
         for i, link in enumerate(lines):
-            extract_pdf_link(link, saved_folder)
-            print("\ndownloaded {}/{}: {}".format(i, len(lines), link))
+            try:
+                link = link.strip()
+                print("downloading ... {}".format(link))
+                pdf_link = extract_pdf_link(link, saved_folder)
+                print("\ndownloaded {}/{}: {} (pdf: {})".format(i, len(lines), link, pdf_link))
+            except:
+                print("error: ", link)
