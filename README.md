@@ -16,5 +16,5 @@ pip install -r requirements.txt
 
 ## Usage: `python download.py <sample_file> <output_folder>`
 ```
-    python download.py springer_links.txt download
+python download.py springer_links.txt download
 ```
